@@ -6,7 +6,7 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:47:56 by ejolyn            #+#    #+#             */
-/*   Updated: 2020/12/20 14:53:35 by ejolyn           ###   ########.fr       */
+/*   Updated: 2020/12/20 16:35:49 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,31 +33,31 @@ char	**make_map(t_list **head, int size)
 	return (map);
 }
 
-char **map_trans(char **map, int max_len, int size)
-{
-	char **map_transp;
-	int i = 0;
-	int j = 0;
+// char **map_trans(char **map, int max_len, int size)
+// {
+// 	char **map_transp;
+// 	int i = 0;
+// 	int j = 0;
 
-	map_transp = (char **)malloc((max_len + 1) * sizeof(char *));
-	while (j < max_len)
-	{
-		map_transp[j] = (char *)malloc(size + 1);
-		while (i < size)
-		{
-			if (j < (int)ft_strlen(map[i]))
-				map_transp[j][i] = map[i][j];
-			else
-				map_transp[j][i] = '0';
-			i++;
-		}
-		map_transp[j][i] = '\0';
-		j++;
-		i = 0;
-	}
-	map_transp[max_len] = NULL;
-	return (map_transp);
-}
+// 	map_transp = (char **)malloc((max_len + 1) * sizeof(char *));
+// 	while (j < max_len)
+// 	{
+// 		map_transp[j] = (char *)malloc(size + 1);
+// 		while (i < size)
+// 		{
+// 			if (j < (int)ft_strlen(map[i]))
+// 				map_transp[j][i] = map[i][j];
+// 			else
+// 				map_transp[j][i] = '0';
+// 			i++;
+// 		}
+// 		map_transp[j][i] = '\0';
+// 		j++;
+// 		i = 0;
+// 	}
+// 	map_transp[max_len] = NULL;
+// 	return (map_transp);
+// }
 
 void            my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
@@ -129,7 +129,6 @@ void find_player(t_data *img)
 		{
 			if (img->map[i][j] == 'N')
 			{
-				img->color = 0x0000C800;
 				img->player->x = i;
 				img->player->y = j;
 				img->map[i][j] = 0;

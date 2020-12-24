@@ -6,7 +6,7 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/04 10:49:32 by ejolyn            #+#    #+#             */
-/*   Updated: 2020/12/20 15:31:06 by ejolyn           ###   ########.fr       */
+/*   Updated: 2020/12/24 15:24:34 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ void three_d(t_data *img)
 		img->player->raydirectY = img->player->directY + img->player->planeY * img->player->cameraX;
 		img->mapX = (int)img->player->x;
 		img->mapY = (int)img->player->y;
-		img->player->deltadistX = (img->player->raydirectY == 0) ? 0 : ((img->player->raydirectX == 0) ? 1 : fabs(1 / img->player->raydirectX));
-		img->player->deltadistY = (img->player->raydirectX == 0) ? 0 : ((img->player->raydirectY == 0) ? 1 : fabs(1 / img->player->raydirectY));
+		img->player->deltadistX =  (img->player->raydirectX == 0) ? 1 : fabs(1 / img->player->raydirectX);
+		img->player->deltadistY =  (img->player->raydirectY == 0) ? 1 : fabs(1 / img->player->raydirectY);
 		calculate_sidedist(img);
 		while (img->map[img->mapX][img->mapY] != '1')
 		{
@@ -177,10 +177,11 @@ void init(t_data *data)
 	data->bits_per_pixel = 0;
 	data->line_length = 0;
 	data->endian = 0;
-	data->resolution_w = 1280;
-	data->resolution_h = 1024;
+	data->resolution_w = 1920;
+	data->resolution_h = 1080;
 	data->error = 0;
 }
+
 void init_plr (t_data *img)
 {
 	img->player->directX = -1;
@@ -198,7 +199,7 @@ int main(int argc, char **argv)
 		return (0);
 	init(&img);
 	fd = open(argv[1], O_RDONLY);
-	img.map = parser(fd);
+	img.map = parser(fd, &img);
 	find_player(&img);
 	img.mlx = mlx_init();
 	img.win = mlx_new_window(img.mlx, 1280, 1024, "Ulala");

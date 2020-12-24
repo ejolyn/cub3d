@@ -6,7 +6,7 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 11:50:58 by ejolyn            #+#    #+#             */
-/*   Updated: 2020/12/20 15:10:46 by ejolyn           ###   ########.fr       */
+/*   Updated: 2020/12/21 14:03:14 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,11 @@ typedef struct	s_textures
 	char		*south;
 	char		*west;
 	char		*east;
-	char		*sprite;		
-	long		color_floor;
-	long		color_ceiling;
+	char		*sprite;
+	int			resolution_w;
+	int			resolution_h;
+	unsigned int	color_floor;
+	unsigned int	color_ceiling;
 }				t_textures;
 
 typedef struct  s_data {
@@ -57,7 +59,7 @@ typedef struct  s_data {
 	int			error;
 	int			mapX;
 	int			mapY;
-	// t_textures	*textures;
+	t_textures	*textures;
 	t_player	*player;
 	char		**map;
 }               t_data;
@@ -93,7 +95,7 @@ void	draw_square(t_data *img, int i, int j);
 void	draw_map(t_data *img, char **map);
 int		close_win(int keycode, t_data *vars);
 void	ft_error(t_data *img, char *error);
-char	**parser(int fd);
+char	**parser(int fd, t_data *img);
 int		validate_map(t_data *img, char **map);
 void	processor_move_player(int keycode, t_data *img);
 void 	find_player(t_data *img);
