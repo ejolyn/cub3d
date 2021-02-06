@@ -6,7 +6,7 @@
 #    By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/02 20:44:56 by ejolyn            #+#    #+#              #
-#    Updated: 2021/02/04 10:24:42 by ejolyn           ###   ########.fr        #
+#    Updated: 2021/02/06 17:29:19 by ejolyn           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ SRCS		= 	main.c get_next_line/get_next_line.c get_next_line/get_next_line_utils.
 
 OBJS		=	${SRCS:.c=.o}
 
-NAME		=	cub3d.out
+NAME		=	cub3D
 
 INCLUDES	= 	cub3d.h
 

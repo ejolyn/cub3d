@@ -6,16 +6,17 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/07 11:50:58 by ejolyn            #+#    #+#             */
-/*   Updated: 2021/02/04 10:25:29 by ejolyn           ###   ########.fr       */
+/*   Updated: 2021/02/06 18:51:25 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 typedef struct	s_player {
 	float		x;
 	float		y;
-	float		planeX;	// camera plane
+	char		orientation;
+	float		planeX;
 	float		planeY;
-	float		directX; //direction vector
+	float		directX;
 	float		directY;
 	float		cameraX;
 	float		raydirectX;
@@ -29,7 +30,7 @@ typedef struct	s_player {
 	float		perpWallDist;
 	int			line_h;
 	float		left;
-	float		right;	
+	float		right;
 }				t_player;
 
 typedef struct	s_textures
@@ -59,6 +60,31 @@ typedef struct	s_images
 	
 }				t_images;
 
+typedef struct	s_individual
+{
+	double		x;
+	double		y;
+	int			spriteOrder;
+	double		spriteDistance;
+}				t_individual;
+
+typedef struct	s_sprite
+{
+	void		*img;
+	char		*addr;
+	int         bits_per_pixel;
+    int         endian;
+	int         line_length;
+	int			numofsprites;
+	int			textureWidth;
+	int			textureHeight;
+	double		spriteX;
+	double		spriteY;
+	double		invDet;
+	double		transformX;
+	double		transformY;
+}				t_sprite;
+
 typedef struct  s_data {
     void        *img;
 	void		*mlx;
@@ -71,14 +97,24 @@ typedef struct  s_data {
 	int			error;
 	int			mapX;
 	int			mapY;
+	int			screen_w;
+	int			screen_h;
+	int			move_w;
+	int			move_s;
+	int			move_a;
+	int			move_d;
+	int			rotate_r;
+	int			rotate_l;
 	t_textures	textures;
 	t_player	player;
-	t_images	images[5];
+	t_images	images[4];
+	t_sprite	sprite;
+	t_individual *spr_array;
 	char		**map;
 }               t_data;
 
 #include <fcntl.h>
-#include <mlx.h>
+#include "mlx/mlx.h"
 #include "libft/libft.h"
 #include "get_next_line/get_next_line.h"
 #include <math.h>
@@ -95,8 +131,8 @@ typedef struct  s_data {
 # define D 2
 
 # define SCALE_MAP 15
-# define MOVE_SPEED 1
-# define ROTATE_SPEED 0.3
+# define MOVE_SPEED 0.1
+# define ROTATE_SPEED 0.05
 # define MAP_ERROR 1
 # define READ_ERROR 2
 # define GAME_ERROR 3
@@ -110,16 +146,20 @@ int		close_win(int keycode, t_data *vars);
 void	ft_error(t_data *img, char *error);
 char	**parser(int fd, t_data *img);
 int		validate_map(t_data *img, char **map);
-void	processor_move_player(int keycode, t_data *img);
+void	processor_move_player(t_data *img);
+void processor_look_player(t_data *img);
 void 	find_player(t_data *img);
+void 	find_sprites(t_data *img);
 void	ft_cast_rays(t_data *data);
 void	ft_draw_line(t_data *img, int x, short side);
 
+void raycast_main(t_data *img);
 void ft_parse_textures(t_data *img, char **texture, char *line);
 void ft_parse_resolution(t_data *img, char* str);
 void ft_parse_color_floor(t_data *img, char* str);
 void ft_parse_color_ceiling(t_data *img, char* str);
 unsigned int my_mlx_get_color(t_images *img, int x, int y);
+unsigned int my_mlx_get_color_sprite(t_sprite *img, int x, int y);
 
 void init(t_data *data);
 void init_plr (t_data *img);

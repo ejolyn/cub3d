@@ -6,7 +6,7 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 08:59:54 by ejolyn            #+#    #+#             */
-/*   Updated: 2021/02/03 17:28:32 by ejolyn           ###   ########.fr       */
+/*   Updated: 2021/02/05 20:39:54 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,9 @@ void ft_parse_resolution(t_data *img, char* str)
 		img->textures.resolution_h = ft_atoi(str);
 	else
 		ft_error(img, "Wrong resolution");
+	mlx_get_screen_size(img->mlx, &img->screen_w, &img->screen_h);
+	img->textures.resolution_w = (img->textures.resolution_w > img->screen_w || img->textures.resolution_w < 0) ? img->screen_w : img->textures.resolution_w;
+	img->textures.resolution_h = (img->textures.resolution_h > img->screen_h || img->textures.resolution_h < 0) ? img->screen_h : img->textures.resolution_h;
 }
 
 void ft_parse_color_floor(t_data *img, char* str)
