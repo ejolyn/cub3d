@@ -6,60 +6,80 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:47:56 by ejolyn            #+#    #+#             */
-/*   Updated: 2021/02/06 17:05:16 by ejolyn           ###   ########.fr       */
+/*   Updated: 2021/02/12 12:21:23 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-char	**make_map(t_list **head, int size)
+char	**map_dobivka(t_data *img, char **map, size_t max)
 {
-	char	**map = ft_calloc(size + 1, sizeof(char *));
-	int		i = -1;
-	// size_t	max = 0;
-	t_list	*tmp = *head;
+	int		i;
+	int		k;
+	char	*line;
 
+	i = -1;
+	k = 0;
+	line = NULL;
+	while (map[++i] != NULL)
+	{
+		k = 0;
+		if (!(line = (char *)malloc(max + 1)))
+			ft_error(img, "Trouble with malloc");
+		while (map[i][k] != '\0')
+		{
+			line[k] = map[i][k];
+			k++;
+		}
+		while (k < (int)max)
+			line[k++] = ' ';
+		line[k] = '\0';
+		map[i] = line;
+	}
+	return (map);
+}
+
+char	**make_map(t_list **head, int size, t_data *img)
+{
+	char	**map;
+	int		i;
+	size_t	max;
+	t_list	*tmp;
+
+	i = -1;
+	max = 0;
+	tmp = *head;
+	if (!(map = malloc((size + 1) * sizeof(char *))))
+		ft_error(img, "Trouble with malloc");
 	while (tmp)
 	{
 		map[++i] = tmp->content;
 		tmp = tmp->next;
-		// if (ft_strlen(map[i]) > max)
-		// 	max = ft_strlen(map[i]);
+		if (ft_strlen(map[i]) > max)
+			max = ft_strlen(map[i]);
 	}
+	if (map[i][0] == '\0')
+		ft_error(img, "Invalid map information");
 	map[++i] = NULL;
+	map = map_dobivka(img, map, max);
+	img->map_max_size = (int)max;
 	return (map);
 }
 
-void            my_mlx_pixel_put(t_data *data, int x, int y, int color)
+void	helper_find_player_and_sprites(t_data *img, int i, int j)
 {
-    char    *dst;
-
-    dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-    *(unsigned int*)dst = color;
-}
-
-unsigned int my_mlx_get_color_sprite(t_sprite *img, int x, int y)
-{
-	unsigned int color;
-
-	color = *(int *)(img->addr + ((x + (y * img->textureWidth)) * (img->bits_per_pixel / 8)));
-	return (color);
-} 
-
-unsigned int my_mlx_get_color(t_images *img, int x, int y)
-{
-	unsigned int color;
-
-	color = *(int *)(img->addr + ((x + (y * img->textureWidth)) * (img->bits_per_pixel / 8)));
-	return (color);
-} 
-
-void helper_find_player_and_sprites(t_data *img, int i, int j)
-{
-	if (img->map[i][j] == 'N' || img->map[i][j] == 'S' || img->map[i][j] == 'W' || img->map[i][j] == 'E')
+	if (img->map[i][j] != 'N' && img->map[i][j] != 'S' &&
+		img->map[i][j] != 'W' && img->map[i][j] != 'E'
+		&& img->map[i][j] != '0' && img->map[i][j] != '1' &&
+			img->map[i][j] != '2' && img->map[i][j] != ' ')
+		ft_error(img, "Invalid map - wrong symbols in map");
+	if (img->map[i][j] == 'N' || img->map[i][j] == 'S' ||
+		img->map[i][j] == 'W' || img->map[i][j] == 'E')
 	{
-		img->player.x = i;
-		img->player.y = j;
+		if (img->player.x != -1 || img->player.y != -1)
+			ft_error(img, "Double player");
+		img->player.x = i + 0.5;
+		img->player.y = j + 0.5;
 		if (img->map[i][j] == 'N')
 			img->player.orientation = 'N';
 		if (img->map[i][j] == 'S')
@@ -74,55 +94,51 @@ void helper_find_player_and_sprites(t_data *img, int i, int j)
 		img->sprite.numofsprites++;
 }
 
-void find_player(t_data *img)
+void	find_player(t_data *img)
 {
-	int i;
-	int k;
-	int j;
-	t_player *plr;
-	
+	int			i;
+	int			j;
+
 	i = 0;
 	j = 0;
-	k = 0;
-	plr = (t_player*)malloc(sizeof(t_player*));
-	img->player = *plr;
 	img->sprite.numofsprites = 0;
 	img->player.orientation = 0;
+	img->player.x = -1;
+	img->player.y = -1;
 	while (img->map[i] != NULL)
 	{
-		k = ft_strlen(img->map[i]);
-		while (j < k)
-		{
+		j = ft_strlen(img->map[i]);
+		while (--j >= 0)
 			helper_find_player_and_sprites(img, i, j);
-			j++;
-		}
-		j = 0;
 		i++;
 	}
+	if (img->player.x == -1 && img->player.y == -1)
+		ft_error(img, "Where is the player?");
 }
 
-void find_sprites(t_data *img)
+void	find_sprites(t_data *img, int i)
 {
-	t_individual *spr_array = (t_individual *)malloc(sizeof(t_individual) * img->sprite.numofsprites);
-	int i = 0;
-	int k = 0;
-	int j = 0;
-	int l = 0;
-	
+	t_individual	*spr_array;
+	int				j;
+	int				l;
+
+	j = 0;
+	l = 0;
+	if (!(spr_array = (t_individual *)malloc(sizeof(t_individual)
+		* img->sprite.numofsprites)))
+		ft_error(img, "Trouble with malloc");
 	while (img->map[i] != NULL)
 	{
-		k = ft_strlen(img->map[i]);
-		while (j < k)
+		j = ft_strlen(img->map[i]);
+		while (--j >= 0)
 		{
 			if (img->map[i][j] == '2')
 			{
-				spr_array[l].x = i;
-				spr_array[l].y = j;
+				spr_array[l].x = i + 0.5;
+				spr_array[l].y = j + 0.5;
 				l++;
 			}
-			j++;
 		}
-		j = 0;
 		i++;
 	}
 	img->spr_array = spr_array;

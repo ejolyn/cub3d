@@ -6,13 +6,13 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 12:41:42 by ejolyn            #+#    #+#             */
-/*   Updated: 2021/02/02 16:53:31 by ejolyn           ###   ########.fr       */
+/*   Updated: 2021/02/12 13:43:44 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-void init_textures(t_textures *parse_text)
+void	init_textures(t_textures *parse_text)
 {
 	parse_text->north = NULL;
 	parse_text->south = NULL;
@@ -25,30 +25,7 @@ void init_textures(t_textures *parse_text)
 	parse_text->color_floor = -1;
 }
 
-// int check_textures(t_textures *parse_text, t_data *img)
-// {
-// 	if (parse_text->north == NULL)
-// 		return (1);
-// 	if (parse_text->south == NULL)
-// 		return (1);
-// 	if (parse_text->east == NULL)
-// 		return (1);
-// 	if (parse_text->west == NULL)
-// 		return (1);
-// 	if (parse_text->sprite == NULL)
-// 		return (1);
-// 	if (img->resolution_h == 0 || img->resolution_w == 0)
-// 		return (1);
-// 	if (parse_text->color_ceiling == -1)
-// 		return (1);
-// 	if (parse_text->color_floor == -1)
-// 		return (1);
-// 	return (0);
-// }
-
-
-
-void ft_parse_all(t_data *img, char *line)
+void	ft_parse_all(t_data *img, char *line)
 {
 	if (line[0] == 'R' && line[1] == ' ')
 		ft_parse_resolution(img, line);
@@ -66,46 +43,55 @@ void ft_parse_all(t_data *img, char *line)
 		ft_parse_textures(img, &img->textures.west, line);
 	else if (line[0] == 'E' && line[1] == 'A')
 		ft_parse_textures(img, &img->textures.east, line);
+	else if (line[0] == '\0')
+	{
+		free(line);
+		return ;
+	}
 	else
-		img->error = 1;
+		ft_error(img, "Invalid map information");
+	free(line);
+}
+
+void	check_all_data(t_data *img)
+{
+	if (img->textures.color_ceiling == -1 || img->textures.color_floor == -1
+		|| img->textures.resolution_w == 0 || img->textures.resolution_h == 0 ||
+			img->textures.north == NULL || img->textures.south == NULL ||
+				img->textures.west == NULL || img->textures.east == NULL)
+		ft_error(img, "Some strings in map are missing");
 }
 
 char	**parser(int fd, t_data *img)
 {
-	t_list	*head = NULL;
-	char	*line;
-	char	**map;
-	t_textures *parse_text = (t_textures*)malloc(sizeof(t_textures*));
-	int		flag = 1;
+	t_list		*head;
+	char		*line;
+	char		**map;
 
-	img->textures = *parse_text;
+	head = NULL;
 	init_textures(&img->textures);
-	while ((flag = get_next_line(fd, &line)) && line[0] != '1' && line[0] != '0' && line[0] != ' ')
-	{
-		if (line[0] == '\0')
-			continue ;
+	while ((get_next_line(fd, &line)) &&
+		line[0] != '1' && line[0] != '0' && line[0] != ' ')
 		ft_parse_all(img, line);
-	}
+	check_all_data(img);
 	ft_lstadd_back(&head, ft_lstnew(line));
 	while (get_next_line(fd, &line))
+	{
 		ft_lstadd_back(&head, ft_lstnew(line));
+		if (line[0] == '\0')
+			ft_error(img, "Invalid map information");
+	}
 	ft_lstadd_back(&head, ft_lstnew(line));
-	map = make_map(&head, ft_lstsize(head));
+	map = make_map(&head, ft_lstsize(head), img);
+	ft_lstclear(&head, &free);
 	return (map);
 }
 
 void	ft_error(t_data *img, char *error)
 {
+	check_free(img);
 	write(1, "Error\n", 6);
-	if (img->error == GAME_ERROR)
-	{
-		write(1, error, ft_strlen(error));
-		mlx_destroy_window(img->mlx, img->win);
-	}
-	if (img->error == MAP_ERROR || img->error == READ_ERROR)
-		write(1, error, ft_strlen(error));
-	else
-		write(1, error, ft_strlen(error));
+	write(1, error, ft_strlen(error));
+	write(1, "\n", 1);
 	exit(0);
 }
-
