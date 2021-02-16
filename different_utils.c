@@ -6,7 +6,7 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/09 15:04:48 by ejolyn            #+#    #+#             */
-/*   Updated: 2021/02/12 12:27:09 by ejolyn           ###   ########.fr       */
+/*   Updated: 2021/02/12 15:06:30 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	calculate_sidedist(t_data *img)
 
 int		ft_close_programm(t_data *img)
 {
-	check_free(img);
+	free(img);
 	exit(0);
 	return (0);
 }

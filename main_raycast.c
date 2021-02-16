@@ -6,7 +6,7 @@
 /*   By: ejolyn <ejolyn@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/09 13:29:23 by ejolyn            #+#    #+#             */
-/*   Updated: 2021/02/12 12:26:54 by ejolyn           ###   ########.fr       */
+/*   Updated: 2021/02/16 09:48:51 by ejolyn           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,13 +118,8 @@ void	ft_draw_line(t_data *img, int x, int side)
 	img->wallx -= floor(img->wallx);
 	img->images[img->texnum].texx = (int)(img->wallx *
 		(double)(img->images[img->texnum].texturewidth));
-	if (side == 0 && img->player.raydirectx > 0)
-		img->images[img->texnum].texx =
-			img->images[img->texnum].texturewidth -
-				img->images[img->texnum].texx - 1;
-	else if (side == 1 && img->player.raydirectx < 0)
-		img->images[img->texnum].texx =
-			img->images[img->texnum].texturewidth -
-				img->images[img->texnum].texx - 1;
+	img->images[img->texnum].texx =
+		img->images[img->texnum].texturewidth -
+			img->images[img->texnum].texx - 1;
 	ft_draw_line_continue(img, x);
 }
